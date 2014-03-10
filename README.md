@@ -1,0 +1,4 @@
+zshcfg
+======
+
+My ZSH configuration
