@@ -1,22 +1,40 @@
 echo SETTING OPTS
 
+# Handy little thing for testing options
+# Usage:
+#     zopt OPTION
+# @ill print TRUE or FALSE depending on whether the option is set
+zopt () {
+	if [[ $# = 1 ]]; then
+		if [[ -o $1 ]]; then
+			print 'TRUE'
+		else
+			print 'FALSE'
+		fi
+	else
+		print 'Usage: zopt <OPTION>'
+		return 1
+	fi
+}
+
+########################################################################################################################
 ## 16.2.1 Changing Directories
 
-# (-J)
+# AUTO_CD (-J)
 # If a command is issued that can't be executed as a normal command, and the
 # command is the name of a directory, perform the cd command to that directory.
 setopt AUTO_CD
 
-# (-N)
+# AUTO_PUSHD (-N)
 # Make cd push the old directory onto the directory stack.
 setopt AUTO_PUSHD
 
-# (-T)
+# CDABLE_VARS (-T)
 # If the argument to a cd command (or an implied cd with the AUTO_CD option set)
 # is not a directory, and does not begin with a slash, try to expand the
 # expression as if it were preceded by a '~'
-#setopt CDABLE_VARS
 
+# CHASE_DOTS
 # When changing to a directory containing a path segment '..' which would
 # otherwise be treated as canceling the previous segment in the path (in other
 # words, 'foo/..' would be removed from the path, or if '..' is the first part
@@ -27,14 +45,12 @@ setopt AUTO_PUSHD
 # set, it changes to /alt. The same applies if the current directory is /foo/bar
 # and 'cd ..' is used. Note that all other symbolic links in the path will also
 # be resolved.
-#setopt CHASE_DOTS
 
-# (-w)
+# CHASE_LINKS (-w)
 # Resolve symbolic links to their true values when changing directory. This also
 # has the effect of CHASE_DOTS, i.e. a '..' path segment will be treated as
 # referring to the physical parent, even if the preceding path segment is a
 # symbolic link.
-#setopt CHASE_LINKS
 
 # POSIX_CD
 # Modifies the behaviour of cd, chdir and pushd commands to make them more
@@ -48,9 +64,9 @@ setopt AUTO_PUSHD
 # shells); and any use of a component of CDPATH, including a '.' but excluding an empty
 # component that is otherwise treated as '.', causes the directory to be printed.
 
-
 # PUSHD_IGNORE_DUPS
 # Don't push multiple copies of the same directory onto the directory stack.
+
 # PUSHD_MINUS
 # Exchanges the meanings of '+' and '-' when used with a number to specify a directory
 # in the stack.
@@ -61,8 +77,7 @@ setopt AUTO_PUSHD
 # PUSHD_TO_HOME (-D)
 # Have pushd with no arguments act like 'pushd $HOME'.
 
-
-
+########################################################################################################################
 ## 16.2.2 Completion
 
 # ALWAYS_LAST_PROMPT <D>
@@ -89,6 +104,7 @@ setopt AUTO_PUSHD
 # name for that directory, that will be used by the '%~' and related prompt sequences,
 # and will be available when completion is performed on a word starting with '~'.
 # (Otherwise, the parameter must be used in the form '~param' first.)
+setopt AUTO_NAME_DIRS
 
 # AUTO_PARAM_KEYS <D>
 # If a parameter name was completed and a following character (normally a space)
@@ -175,9 +191,8 @@ setopt AUTO_PUSHD
 # REC_EXACT (-S)
 # In completion, recognize exact matches even if they are ambiguous.
 
-
-
-# 16.2.3 Expansion and Globbing
+########################################################################################################################
+## 16.2.3 Expansion and Globbing
 
 # BAD_PATTERN (+2) <C> <Z>
 # If a pattern for filename generation is badly formed, print an error message. (If this
@@ -195,29 +210,35 @@ setopt AUTO_PUSHD
 
 # CASE_GLOB <D>
 # Make globbing (filename generation) sensitive to case. Note that other uses of
-# patterns are always sensitive to case. If the option is unset, the presence of anyChapter 16: Options
-# 90
-# character which is special to filename generation will cause case-insensitive matching.
+# patterns are always sensitive to case. If the option is unset, the presence of any character which is special to
+# filename generation will cause case-insensitive matching.
 # For example, cvs(/) can match the directory CVS owing to the presence of the
 # globbing flag (unless the option BARE_GLOB_QUAL is unset).
+
 # CASE_MATCH <D>
 # Make regular expressions using the zsh/regex module (including matches with =~)
 # sensitive to case.
+
 # CSH_NULL_GLOB <C>
 # If a pattern for filename generation has no matches, delete the pattern from the
 # argument list; do not report an error unless all the patterns in a command have no
 # matches. Overrides NOMATCH.
+
 # EQUALS <Z>
 # Perform = filename expansion. (See Section 14.7 [Filename Expansion], page 55.)
+
 # EXTENDED_GLOB
 # Treat the '#', '~' and '^' characters as part of patterns for filename generation, etc.
 # (An initial unquoted '~' always produces named directory expansion.)
+
 # FORCE_FLOAT
 # Constants in arithmetic evaluation will be treated as floating point even without
 # the use of a decimal point. Integers in any base will be converted.
+
 # GLOB (+F, ksh: +f) <D>
 # Perform filename generation (globbing). (See Section 14.8 [Filename Generation],
 # page 57.)
+
 # GLOB_ASSIGN <C>
 # If this option is set, filename generation (globbing) is performed on the right hand
 # side of scalar parameter assignments of the form 'name=pattern (e.g. 'foo=*'). If
@@ -227,25 +248,29 @@ setopt AUTO_PUSHD
 # form 'name=(value)' (e.g. 'foo=(*)') and this form is recommended for clarity;
 # with this option set, it is not possible to predict whether the result will be an array
 # or a scalar.
+
 # GLOB_DOTS (-4)
 # Do not require a leading '.' in a filename to be matched explicitly.
+
 # GLOB_SUBST <C> <K> <S>
 # Treat any characters resulting from parameter expansion as being eligible for file
 # expansion and filename generation, and any characters resulting from command sub-
 # stitution as being eligible for filename generation. Braces (and commas in between)
 # do not become eligible for expansion.
+
 # HIST_SUBST_PATTERN
 # Substitutions using the :s and :& history modifiers are performed with pattern
 # matching instead of string matching. This occurs wherever history modifiers are
 # valid, including glob qualifiers and parameters. See Section 14.1.4 [Modifiers],
 # page 39.
+
 # IGNORE_BRACES (-I) <S>
 # Do not perform brace expansion. For historical reasons this also includes the effect
 # of the IGNORE_CLOSE_BRACES option.
+
 # IGNORE_CLOSE_BRACES
 # When neither this option nor IGNORE_BRACES is set, a sole close brace character
-# '}' is syntactically significant at any point on a command line. This has the effectChapter 16: Options
-# 91
+# '}' is syntactically significant at any point on a command line. This has the effect
 # that no semicolon or newline is necessary before the brace terminating a function
 # or current shell construct. When either option is set, a closing brace is syntactically
 # significant only in command position. Unlike IGNORE_BRACES, this option does not
@@ -256,9 +281,11 @@ setopt AUTO_PUSHD
 # while if either option is set, this does not work and something equivalent to the
 # following is required:
 # args() { echo $#; }
+
 # KSH_GLOB <K>
 # In pattern matching, the interpretation of parentheses is affected by a preceding '@',
 # '*', '+', '?' or '!'. See Section 14.8 [Filename Generation], page 57.
+
 # MAGIC_EQUAL_SUBST
 # All unquoted arguments of the form 'anything=expression' appearing after the com-
 # mand name have filename expansion (that is, where expression has a leading '~'
@@ -270,9 +297,11 @@ setopt AUTO_PUSHD
 # This option respects the setting of the KSH_TYPESET option. In other words, if both
 # options are in effect, arguments looking like assignments will not undergo word
 # splitting.
+
 # MARK_DIRS (-8, ksh: -X)
 # Append a trailing '/' to all directory names resulting from filename generation (glob-
 # bing).
+
 # MULTIBYTE <C> <K> <Z>
 # Respect multibyte characters when found in strings. When this option is set, strings
 # are examined using the system library to determine how many bytes form a char-
@@ -290,25 +319,32 @@ setopt AUTO_PUSHD
 # The option does not affect the shell's editor, which always uses the locale to de-
 # termine multibyte characters. This is because the character set displayed by the
 # terminal emulator is independent of shell settings.
+
 # NOMATCH (+3) <C> <Z>
 # If a pattern for filename generation has no matches, print an error, instead of leaving
 # it unchanged in the argument list. This also applies to file expansion of an initial
-# '~' or '='.Chapter 16: Options
-# 92
+# '~' or '='.
+setopt NOMATCH
+#bct I can't get this to work
+
 # NULL_GLOB (-G)
 # If a pattern for filename generation has no matches, delete the pattern from the
 # argument list instead of reporting an error. Overrides NOMATCH.
+
 # NUMERIC_GLOB_SORT
 # If numeric filenames are matched by a filename generation pattern, sort the filenames
 # numerically rather than lexicographically.
+
 # RC_EXPAND_PARAM (-P)
 # Array expansions of the form 'foo${xx}bar', where the parameter xx is set to (a
 # b c), are substituted with 'fooabar foobbar foocbar' instead of the default 'fooa b
 # cbar'. Note that an empty array will therefore cause all arguments to be removed.
+
 # REMATCH_PCRE <Z>
 # If set, regular expression matching with the =~ operator will use Perl-Compatible
 # Regular Expressions from the PCRE library, if available. If not set, regular expres-
 # sions will use the extended regexp syntax provided by the system libraries.
+
 # SH_GLOB <K> <S>
 # Disables the special meaning of '(', '|', ')' and '<' for globbing the result of param-
 # eter and command substitutions, and in some other places where the shell accepts
@@ -316,16 +352,21 @@ setopt AUTO_PUSHD
 # of subshell expressions enclosed in parentheses in some cases where there is no space
 # before the opening parenthesis, e.g. !(true) is interpreted as if there were a space
 # after the !. This option is set by default if zsh is invoked as sh or ksh.
+
 # UNSET (+u, ksh: +u) <K> <S> <Z>
 # Treat unset parameters as if they were empty when substituting. Otherwise they
 # are treated as an error.
+
 # WARN_CREATE_GLOBAL
 # Print a warning message when a global parameter is created in a function by an
 # assignment. This often indicates that a parameter has not been declared local when
 # it should have been. Parameters explicitly declared global from within a function
 # using typeset -g do not cause a warning. Note that there is no warning when a
 # local parameter is assigned to in a nested function, which may also indicate an error.
+
+########################################################################################################################
 # 16.2.4 History
+
 # APPEND_HISTORY <D>
 # If this is set, zsh sessions will append their history list to the history file, rather
 # than replace it. Thus, multiple parallel zsh sessions will all have the new entries
@@ -333,18 +374,23 @@ setopt AUTO_PUSHD
 # file will still be periodically re-written to trim it when the number of lines grows
 # 20% beyond the value specified by $SAVEHIST (see also the HIST SAVE BY COPY
 # option).
+
 # BANG_HIST (+K) <C> <Z>
 # Perform textual history expansion, csh-style, treating the character '!' specially.
+
 # EXTENDED_HISTORY <C>
 # Save each command's beginning timestamp (in seconds since the epoch) and the
 # duration (in seconds) to the history file. The format of this prefixed data is:
 # ': <beginning time>:<elapsed seconds>;<command>'.
+setopt EXTENDED_HISTORY
+
 # HIST_ALLOW_CLOBBER
 # Add '|' to output redirections in the history. This allows history references to
-# clobber files even when CLOBBER is unset.Chapter 16: Options
-# 93
+# clobber files even when CLOBBER is unset.
+
 # HIST_BEEP <D>
 # Beep when an attempt is made to access a history entry which isn't there.
+
 # HIST_EXPIRE_DUPS_FIRST
 # If the internal history needs to be trimmed to add the current command line, setting
 # this option will cause the oldest history event that has a duplicate to be lost before
@@ -352,21 +398,26 @@ setopt AUTO_PUSHD
 # to a larger number than SAVEHIST in order to give you some room for the duplicated
 # events, otherwise this option will behave just like HIST_IGNORE_ALL_DUPS once the
 # history fills up with unique events.
+
 # HIST_FCNTL_LOCK
 # When writing out the history file, by default zsh uses ad-hoc file locking to avoid
 # known problems with locking on some operating systems. With this option locking
 # is done by means of the system's fcntl call, where this method is available. On
 # recent operating systems this may provide better performance, in particular avoiding
 # history corruption when files are stored on NFS.
+
 # HIST_FIND_NO_DUPS
 # When searching for history entries in the line editor, do not display duplicates of a
 # line previously found, even if the duplicates are not contiguous.
+
 # HIST_IGNORE_ALL_DUPS
 # If a new command line being added to the history list duplicates an older one, the
 # older command is removed from the list (even if it is not the previous event).
+
 # HIST_IGNORE_DUPS (-h)
 # Do not enter command lines into the history list if they are duplicates of the previous
 # event.
+
 # HIST_IGNORE_SPACE (-g)
 # Remove command lines from the history list when the first character on the line is
 # a space, or when one of the expanded aliases contains a leading space. Only normal
@@ -374,6 +425,8 @@ setopt AUTO_PUSHD
 # lingers in the internal history until the next command is entered before it vanishes,
 # allowing you to briefly reuse or edit the line. If you want to make it vanish right
 # away without entering another command, type a space and press return.
+setopt HIST_IGNORE_SPACE
+
 # HIST_LEX_WORDS
 # By default, shell history that is read in from files is split into words on all white space.
 # This means that arguments with quoted whitespace are not correctly handled, with
@@ -382,17 +435,20 @@ setopt AUTO_PUSHD
 # divided up in a similar fashion to normal shell command line handling. Although
 # this produces more accurately delimited words, if the size of the history file is large
 # this can be slow. Trial and error is necessary to decide.
+
 # HIST_NO_FUNCTIONS
 # Remove function definitions from the history list. Note that the function lingers in
 # the internal history until the next command is entered before it vanishes, allowing
 # you to briefly reuse or edit the definition.
+
 # HIST_NO_STORE
 # Remove the history (fc -l) command from the history list when invoked. Note
 # that the command lingers in the internal history until the next command is entered
-# before it vanishes, allowing you to briefly reuse or edit the line.Chapter 16: Options
-# 94
+# before it vanishes, allowing you to briefly reuse or edit the line.
+
 # HIST_REDUCE_BLANKS
 # Remove superfluous blanks from each command line being added to the history list.
+
 # HIST_SAVE_BY_COPY <D>
 # When the history file is re-written, we normally write out a copy of the file named
 # $HISTFILE.new and then rename it over the old one. However, if this option is
@@ -404,18 +460,22 @@ setopt AUTO_PUSHD
 # When writing out a copy of the history file, zsh preserves the old file's permissions
 # and group information, but will refuse to write out a new file if it would change the
 # history file's owner.
+
 # HIST_SAVE_NO_DUPS
 # When writing out the history file, older commands that duplicate newer ones are
 # omitted.
+
 # HIST_VERIFY
 # Whenever the user enters a line with history expansion, don't execute the line di-
 # rectly; instead, perform history expansion and reload the line into the editing buffer.
+
 # INC_APPEND_HISTORY
 # This options works like APPEND_HISTORY except that new history lines are added
 # to the $HISTFILE incrementally (as soon as they are entered), rather than waiting
 # until the shell exits. The file will still be periodically re-written to trim it when the
 # number of lines grows 20% beyond the value specified by $SAVEHIST (see also the
 # HIST SAVE BY COPY option).
+
 # SHARE_HISTORY <K>
 # This option both imports new commands from the history file, and also causes
 # your typed commands to be appended to the history file (the latter is like specify-
@@ -429,51 +489,65 @@ setopt AUTO_PUSHD
 # If you find that you want more control over when commands get imported, you
 # may wish to turn SHARE_HISTORY off, INC_APPEND_HISTORY on, and then manually
 # import commands whenever you need them using 'fc -RI'.
+
+########################################################################################################################
 # 16.2.5 Initialisation
+
 # ALL_EXPORT (-a, ksh: -a)
 # All parameters subsequently defined are automatically exported.
+
 # GLOBAL_EXPORT (<Z>)
 # If this option is set, passing the -x flag to the builtins declare, float, integer,
 # readonly and typeset (but not local) will also set the -g flag; hence parameters
 # exported to the environment will not be made local to the enclosing function, unless
 # they were already or the flag +g is given explicitly. If the option is unset, exported
-# parameters will be made local in just the same way as any other parameter.Chapter 16: Options
-# 95
+# parameters will be made local in just the same way as any other parameter.
 # This option is set by default for backward compatibility; it is not recommended that
 # its behaviour be relied upon. Note that the builtin export always sets both the -x
 # and -g flags, and hence its effect extends beyond the scope of the enclosing function;
 # this is the most portable way to achieve this behaviour.
+
 # GLOBAL_RCS (-d) <D>
 # If this option is unset, the startup files /etc/zprofile, /etc/zshrc, /etc/zlogin
 # and /etc/zlogout will not be run. It can be disabled and re-enabled at any time,
 # including inside local startup files (.zshrc, etc.).
+
 # RCS (+f) <D>
 # After /etc/zshenv is sourced on startup, source the .zshenv, /etc/zprofile,
 # .zprofile, /etc/zshrc, .zshrc, /etc/zlogin, .zlogin, and .zlogout files, as
 # described in Chapter 5 [Files], page 8. If this option is unset, the /etc/zshenv file
 # is still sourced, but any of the others will not be; it can be set at any time to prevent
 # the remaining startup files after the currently executing one from being sourced.
+
+########################################################################################################################
 # 16.2.6 Input/Output
+
 # ALIASES <D>
 # Expand aliases.
+
 # CLOBBER (+C, ksh: +C) <D>
 # Allows '>' redirection to truncate existing files, and '>>' to create files. Otherwise
 # '>!' or '>|' must be used to truncate a file, and '>>!' or '>>|' to create a file.
+
 # CORRECT (-0)
 # Try to correct the spelling of commands. Note that, when the HASH_LIST_ALL
 # option is not set or when some directories in the path are not readable, this may
 # falsely report spelling errors the first time some commands are used.
 # The shell variable CORRECT_IGNORE may be set to a pattern to match words that
 # will never be offered as corrections.
+
 # CORRECT_ALL (-O)
 # Try to correct the spelling of all arguments in a line.
+
 # DVORAK
 # Use the Dvorak keyboard instead of the standard qwerty keyboard as a basis for
 # examining spelling mistakes for the CORRECT and CORRECT_ALL options and the
 # spell-word editor command.
+
 # FLOW_CONTROL <D>
 # If this option is unset, output flow control via start/stop characters (usually assigned
 # to ^S/^Q) is disabled in the shell's editor.
+
 # IGNORE_EOF (-7)
 # Do not exit on end-of-file. Require the use of exit or logout instead. However, ten
 # consecutive EOFs will cause the shell to exit anyway, to avoid the shell hanging if
@@ -482,76 +556,97 @@ setopt AUTO_PUSHD
 # shell functions can be bound to EOF (normally Control-D) without printing the
 # normal warning message. This works only for normal widgets, not for completion
 # widgets.
+
 # INTERACTIVE_COMMENTS (-k) <K> <S>
-# Allow comments even in interactive shells.Chapter 16: Options
-# 96
+# Allow comments even in interactive shells.
+
 # HASH_CMDS <D>
 # Note the location of each command the first time it is executed. Subsequent invo-
 # cations of the same command will use the saved location, avoiding a path search. If
 # this option is unset, no path hashing is done at all. However, when CORRECT is set,
 # commands whose names do not appear in the functions or aliases hash tables are
 # hashed in order to avoid reporting them as spelling errors.
+
 # HASH_DIRS <D>
 # Whenever a command name is hashed, hash the directory containing it, as well as
 # all directories that occur earlier in the path. Has no effect if neither HASH_CMDS nor
 # CORRECT is set.
+
 # HASH_EXECUTABLES_ONLY
 # When hashing commands because of HASH_COMMANDS, check that the file to be hashed
 # is actually an executable. This option is unset by default as if the path contains
 # a large number of commands, or consists of many remote files, the additional tests
 # can take a long time. Trial and error is needed to show if this option is beneficial.
+
 # MAIL_WARNING (-U)
 # Print a warning message if a mail file has been accessed since the shell last checked.
+
 # PATH_DIRS (-Q)
 # Perform a path search even on command names with slashes in them. Thus if
-# '/usr/local/bin' is in the user's path, and he or she types 'X11/xinit', the com-
-# mand '/usr/local/bin/X11/xinit' will be executed (assuming it exists). Com-
-# mands explicitly beginning with '/', './' or '../' are not subject to the path search.
+# '/usr/local/bin' is in the user's path, and he or she types 'X11/xinit', the command
+# '/usr/local/bin/X11/xinit' will be executed (assuming it exists). Commands
+# explicitly beginning with '/', './' or '../' are not subject to the path search.
 # This also applies to the '.' builtin.
 # Note that subdirectories of the current directory are always searched for executables
 # specified in this form. This takes place before any search indicated by this option,
 # and regardless of whether '.' or the current directory appear in the command search
 # path.
+
 # PATH_SCRIPT <K> <S>
 # If this option is not set, a script passed as the first non-option argument to the shell
 # must contain the name of the file to open. If this option is set, and the script does
 # not specify a directory path, the script is looked for first in the current directory,
 # then in the command path. See Chapter 4 [Invocation], page 6.
+
 # PRINT_EIGHT_BIT
-# Print eight bit characters literally in completion lists, etc. This option is not nec-
-# essary if your system correctly returns the printability of eight bit characters (see
+# Print eight bit characters literally in completion lists, etc. This option is not necessary
+# if your system correctly returns the printability of eight bit characters (see
 # man page ctype(3)).
+
 # PRINT_EXIT_VALUE (-1)
 # Print the exit value of programs with non-zero exit status. This is only available at
 # the command line in interactive shells.
+setopt PRINT_EXIT_VALUE
+#bct I prefer to put this on the prompt ($PS1) but for now I leave it here
+
 # RC_QUOTES
 # Allow the character sequence '''' to signify a single quote within singly quoted
 # strings. Note this does not apply in quoted strings using the format $'...', where a
 # backslashed single quote can be used.
+setopt RC_QUOTES
+
 # RM_STAR_SILENT (-H) <K> <S>
 # Do not query the user before executing 'rm *' or 'rm path/*'.
+
 # RM_STAR_WAIT
 # If querying the user before executing 'rm *' or 'rm path/*', first wait ten seconds
-# and ignore anything typed in that time. This avoids the problem of reflexivelyChapter 16: Options
-# 97
-# answering 'yes' to the query when one didn't really mean it. The wait and query
+# and ignore anything typed in that time. This avoids the problem of reflexively answering 'yes' to the query when
+# one didn't really mean it. The wait and query
 # can always be avoided by expanding the '*' in ZLE (with tab).
+
 # SHORT_LOOPS <C> <Z>
 # Allow the short forms of for, repeat, select, if, and function constructs.
+
 # SUN_KEYBOARD_HACK (-L)
 # If a line ends with a backquote, and there are an odd number of backquotes on
 # the line, ignore the trailing backquote. This is useful on some keyboards where the
 # return key is too small, and the backquote key lies annoyingly close to it. As an
 # alternative the variable KEYBOARD_HACK lets you choose the character to be removed.
+
+########################################################################################################################
 # 16.2.7 Job Control
+
 # AUTO_CONTINUE
 # With this option set, stopped jobs that are removed from the job table with the
 # disown builtin command are automatically sent a CONT signal to make them running.
+
 # AUTO_RESUME (-W)
 # Treat single word simple commands without redirection as candidates for resumption
 # of an existing job.
+
 # BG_NICE (-6) <C> <Z>
 # Run all background jobs at a lower priority. This option is set by default.
+
 # CHECK_JOBS <Z>
 # Report the status of background and suspended jobs before exiting a shell with job
 # control; a second attempt to exit the shell will succeed. NO_CHECK_JOBS is best used
@@ -561,15 +656,20 @@ setopt AUTO_PUSHD
 # or suspended jobs. A 'jobs' command run from one of the hook functions defined
 # in the section Special Functions in Chapter 9 [Functions], page 20 is not counted for
 # this purpose.
+
 # HUP <Z>
 # Send the HUP signal to running jobs when the shell exits.
+
 # LONG_LIST_JOBS (-R)
 # List jobs in the long format by default.
+
 # MONITOR (-m, ksh: -m)
 # Allow job control. Set by default in interactive shells.
+
 # NOTIFY (-5, ksh: -b) <Z>
 # Report the status of background jobs immediately, rather than waiting until just
 # before printing a prompt.
+
 # POSIX_JOBS <K> <S>
 # This option makes job control more compliant with the POSIX standard.
 # When the option is not set, the MONITOR option is unset on entry to subshells, so
@@ -579,8 +679,7 @@ setopt AUTO_PUSHD
 # When the option is not set, jobs put in the background or foreground with bg or fg
 # are displayed with the same information that would be reported by jobs. When the
 # option is set, only the text is printed. The output from jobs itself is not affected
-# by the option.Chapter 16: Options
-# 98
+# by the option.
 # When the option is not set, job information from the parent shell is saved for output
 # within a subshell (for example, within a pipeline). When the option is set, the output
 # of jobs is empty until a job is started within the subshell.
@@ -588,14 +687,19 @@ setopt AUTO_PUSHD
 # last job started in the background (as given by $!) even if that job has already
 # exited. This works even if the option is turned on temporarily around the use of
 # the wait builtin.
+
+########################################################################################################################
 # 16.2.8 Prompting
+
 # PROMPT_BANG <K>
 # If set, '!' is treated specially in prompt expansion. See Chapter 13 [Prompt Expan-
 # sion], page 32.
+
 # PROMPT_CR (+V) <D>
 # Print a carriage return just before printing a prompt in the line editor. This is on
 # by default as multi-line editing is only possible if the editor knows where the start
 # of the line appears.
+
 # PROMPT_SP <D>
 # Attempt to preserve a partial line (i.e. a line that did not end with a newline)
 # that would otherwise be covered up by the command prompt due to the PROMPT_CR
@@ -609,32 +713,41 @@ setopt AUTO_PUSHD
 # lines are shown.
 # NOTE: if the PROMPT_CR option is not set, enabling this option will have no effect.
 # This option is on by default.
+
 # PROMPT_PERCENT <C> <Z>
 # If set, '%' is treated specially in prompt expansion. See Chapter 13 [Prompt Expan-
 # sion], page 32.
+
 # PROMPT_SUBST <K> <S>
 # If set, parameter expansion, command substitution and arithmetic expansion are
 # performed in prompts. Substitutions within prompts do not affect the command
 # status.
+
 # TRANSIENT_RPROMPT
 # Remove any right prompt from display when accepting a command line. This may
 # be useful with terminals with other cut/paste methods.
+
+########################################################################################################################
 # 16.2.9 Scripts and Functions
+
 # C_BASES
 # Output hexadecimal numbers in the standard C format, for example '0xFF' instead
 # of the usual '16#FF'. If the option OCTAL_ZEROES is also set (it is not by default),
 # octal numbers will be treated similarly and hence appear as '077' instead of '8#77'.
 # This option has no effect on the choice of the output base, nor on the output of bases
 # other than hexadecimal and octal. Note that these formats will be understood on
-# input irrespective of the setting of C_BASES.Chapter 16: Options
-# 99
+# input irrespective of the setting of C_BASES.
+setopt C_BASES
+
 # C_PRECEDENCES
 # This alters the precedence of arithmetic operators to be more like C and other
 # programming languages; Arithmetic Evaluation has an explicit list.
+
 # DEBUG_BEFORE_CMD
 # Run the DEBUG trap before each command; otherwise it is run after each command.
 # Setting this option mimics the behaviour of ksh 93; with the option unset the be-
 # haviour is that of ksh 88.
+
 # ERR_EXIT (-e, ksh: -e)
 # If a command has a non-zero exit status, execute the ZERR trap, if set, and exit.
 # This is disabled while running initialization scripts.
@@ -645,11 +758,13 @@ setopt AUTO_PUSHD
 # restored after the trap exits.
 # Exiting due to ERR_EXIT has certain interactions with asynchronous jobs noted in
 # Chapter 10 [Jobs & Signals], page 25.
+
 # ERR_RETURN
 # If a command has a non-zero exit status, return immediately from the enclosing
 # function. The logic is identical to that for ERR_EXIT, except that an implicit return
 # statement is executed instead of an exit. This will trigger an exit at the outermost
 # level of a non-interactive script.
+
 # EVAL_LINENO <Z>
 # If set, line numbers of expressions evaluated using the builtin eval are tracked
 # separately of the enclosing environment. This applies both to the parameter LINENO
@@ -658,13 +773,16 @@ setopt AUTO_PUSHD
 # an indication. (The two prompt escapes are typically used in the parameter PS4 to
 # be output when the option XTRACE is set.) If EVAL_LINENO is unset, the line number
 # of the surrounding script or function is retained during the evaluation.
+
 # EXEC (+n, ksh: +n) <D>
 # Do execute commands. Without this option, commands are read and checked for
 # syntax errors, but not executed. This option cannot be turned off in an interactive
 # shell, except when '-n' is supplied to the shell at startup.
+
 # FUNCTION_ARGZERO <C> <Z>
 # When executing a shell function or sourcing a script, set $0 temporarily to the name
 # of the function/script.
+
 # LOCAL_OPTIONS <K>
 # If this option is set at the point of return from a shell function, most options (includ-
 # ing this one) which were in force upon entry to the function are restored; options
@@ -673,13 +791,14 @@ setopt AUTO_PUSHD
 # plicitly unset by a shell function the other options in force at the point of return
 # will remain so. A shell function can also guarantee itself a known shell configuration
 # with a formulation like 'emulate -L zsh'; the -L activates LOCAL_OPTIONS.
+
 # LOCAL_PATTERNS
 # If this option is set at the point of return from a shell function, the state of pattern
-# disables, as set with the builtin command 'disable -p', is restored to what it wasChapter 16: Options
-# 100
+# disables, as set with the builtin command 'disable -p', is restored to what it was
 # when the function was entered. The behaviour of this option is similar to the effect of
 # LOCAL_OPTIONS on options; hence 'emulate -L sh' (or indeed any other emulation
 # with the -L option) activates LOCAL_PATTERNS.
+
 # LOCAL_TRAPS <K>
 # If this option is set when a signal trap is set inside a function, then the previous
 # status of the trap for that signal will be restored when the function exits. Note that
@@ -691,45 +810,55 @@ setopt AUTO_PUSHD
 # trap - INT
 # fn() { setopt localtraps; trap '' INT; sleep 3; }
 # will restore normal handling of SIGINT after the function exits.
+
 # MULTI_FUNC_DEF <Z>
 # Allow definitions of multiple functions at once in the form 'fn1 fn2...()'; if the
 # option is not set, this causes a parse error. Definition of multiple functions with
 # the function keyword is always allowed. Multiple function definitions are not often
 # used and can cause obscure errors.
+
 # MULTIOS <Z>
 # Perform implicit tees or cats when multiple redirections are attempted (see
 # Chapter 7 [Redirection], page 16).
+
 # OCTAL_ZEROES <S>
 # Interpret any integer constant beginning with a 0 as octal, per IEEE Std 1003.2-
 # 1992 (ISO 9945-2:1993). This is not enabled by default as it causes problems with
 # parsing of, for example, date and time strings with leading zeroes.
 # Sequences of digits indicating a numeric base such as the '08' component in '08#77'
 # are always interpreted as decimal, regardless of leading zeroes.
+
 # PIPE_FAIL
 # By default, when a pipeline exits the exit status recorded by the shell and returned
 # by the shell variable $? reflects that of the rightmost element of a pipeline. If this
 # option is set, the exit status instead reflects the status of the rightmost element of
 # the pipeline that was non-zero, or zero if all elements exited with zero status.
+
 # SOURCE_TRACE
 # If set, zsh will print an informational message announcing the name of each file it
 # loads. The format of the output is similar to that for the XTRACE option, with the
 # message <sourcetrace>. A file may be loaded by the shell itself when it starts up
 # and shuts down (Startup/Shutdown Files) or by the use of the 'source' and 'dot'
 # builtin commands.
+
 # TYPESET_SILENT
 # If this is unset, executing any of the 'typeset' family of commands with no options
 # and a list of parameters that have no values to be assigned but already exist will
 # display the value of the parameter. If the option is set, they will only be shown when
 # parameters are selected with the '-m' option. The option '-p' is available whether
 # or not the option is set.
+
 # VERBOSE (-v, ksh: -v)
-# Print shell input lines as they are read.Chapter 16: Options
-# 101
+# Print shell input lines as they are read.
+
 # XTRACE (-x, ksh: -x)
 # Print commands and their arguments as they are executed. The output is proceded
 # by the value of $PS4, formatted as described in Chapter 13 [Prompt Expansion],
 # page 32.
+
+########################################################################################################################
 # 16.2.10 Shell Emulation
+
 # BASH_REMATCH
 # When set, matches performed with the =~ operator will set the BASH_REMATCH array
 # variable, instead of the default MATCH and match variables. The first element of the
@@ -738,10 +867,12 @@ setopt AUTO_PUSHD
 # is also set, so that the entire matched portion is stored at index 0 and the first
 # substring is at index 1. Without this option, the MATCH variable contains the entire
 # matched text and the match array variable contains substrings.
+
 # BSD_ECHO <S>
 # Make the echo builtin compatible with the BSD man page echo(1) command. This
 # disables backslashed escape sequences in echo strings unless the -e option is speci-
 # fied.
+
 # CONTINUE_ON_ERROR
 # If a fatal error is encountered (see Section 6.6 [Errors], page 14), and the code is
 # running in a script, the shell will resume execution at the next statement in the
@@ -749,43 +880,51 @@ setopt AUTO_PUSHD
 # as loops and conditions. This mimics the behaviour of interactive shells, where the
 # shell returns to the line editor to read a new command; it was the normal behaviour
 # in versions of zsh before 5.0.1.
+
 # CSH_JUNKIE_HISTORY <C>
 # A history reference without an event specifier will always refer to the previous com-
 # mand. Without this option, such a history reference refers to the same event as the
 # previous history reference, defaulting to the previous command.
+
 # CSH_JUNKIE_LOOPS <C>
 # Allow loop bodies to take the form 'list; end' instead of 'do list; done'.
+
 # CSH_JUNKIE_QUOTES <C>
 # Changes the rules for single- and double-quoted text to match that of csh. These
 # require that embedded newlines be preceded by a backslash; unescaped newlines will
 # cause an error message. In double-quoted strings, it is made impossible to escape
 # '$', ''' or '"' (and '\' itself no longer needs escaping). Command substitutions are
 # only expanded once, and cannot be nested.
+
 # CSH_NULLCMD <C>
 # Do not use the values of NULLCMD and READNULLCMD when running redirections with
 # no command. This make such redirections fail (see Chapter 7 [Redirection], page 16).
+
 # KSH_ARRAYS <K> <S>
 # Emulate ksh array handling as closely as possible. If this option is set, array elements
 # are numbered from zero, an array parameter without subscript refers to the first
 # element instead of the whole array, and braces are required to delimit a subscript
 # ('${path[2]}' rather than just '$path[2]').
+
 # KSH_AUTOLOAD <K> <S>
 # Emulate ksh function autoloading. This means that when a function is autoloaded,
-# the corresponding file is merely executed, and must define the function itself. (ByChapter 16: Options
-# 102
+# the corresponding file is merely executed, and must define the function itself. (By
 # default, the function is defined to the contents of the file. However, the most common
 # ksh-style case - of the file containing only a simple definition of the function - is
 # always handled in the ksh-compatible manner.)
+
 # KSH_OPTION_PRINT <K>
 # Alters the way options settings are printed: instead of separate lists of set and unset
 # options, all options are shown, marked 'on' if they are in the non-default state, 'off'
 # otherwise.
+
 # KSH_TYPESET <K>
 # Alters the way arguments to the typeset family of commands, including declare,
 # export, float, integer, local and readonly, are processed. Without this option,
 # zsh will perform normal word splitting after command and parameter expansion in
 # arguments of an assignment; with it, word splitting does not take place in those
 # cases.
+
 # KSH_ZERO_SUBSCRIPT
 # Treat use of a subscript of value zero in array or string expressions as a reference
 # to the first element, i.e. the element that usually has the subscript 1. Ignored if
@@ -801,6 +940,7 @@ setopt AUTO_PUSHD
 # is not and will replace the first element of the array.
 # This option is for compatibility with older versions of the shell and is not recom-
 # mended in new code.
+
 # POSIX_ALIASES <K> <S>
 # When this option is set, reserved words are not candidates for alias expansion: it is
 # still possible to declare any of them as an alias, but the alias will never be expanded.
@@ -812,6 +952,7 @@ setopt AUTO_PUSHD
 # posixaliases -c', the entire command argument is parsed as one unit, so aliases
 # defined within the argument are not available even in later lines. If in doubt, avoid
 # use of aliases in non-interactive code.
+
 # POSIX_BUILTINS <K> <S>
 # When this option is set the command builtin can be used to execute shell builtin com-
 # mands. Parameter assignments specified before shell functions and special builtins
@@ -821,8 +962,8 @@ setopt AUTO_PUSHD
 # unset.
 # In addition, various error conditions associated with the above builtins or exec
 # cause a non-interactive shell to exit and an interactive shell to return to its top-level
-# processing.Chapter 16: Options
-# 103
+# processing.
+
 # POSIX_IDENTIFIERS <K> <S>
 # When this option is set, only the ASCII characters a to z, A to Z, 0 to 9 and _ may
 # be used in identifiers (names of shell parameters and modules).
@@ -836,6 +977,7 @@ setopt AUTO_PUSHD
 # If multibyte character support is not compiled into the shell this option is ignored;
 # all octets with the top bit set may be used in identifiers. This is non-standard but
 # is the traditional zsh behaviour.
+
 # POSIX_STRINGS <K> <S>
 # This option affects processing of quoted strings. Currently it only affects the be-
 # haviour of null characters, i.e. character 0 in the portable character set correspond-
@@ -850,43 +992,53 @@ setopt AUTO_PUSHD
 # are not trunctated.
 # For example, the command line argument a$'b\0c'd is treated with the option off
 # as the characters a, b, null, c, d, and with the option on as the characters a, b, d.
+
 # POSIX_TRAPS <K> <S>
 # When the is option is set, the usual zsh behaviour of executing traps for EXIT on
 # exit from shell functions is suppressed. In that case, manipulating EXIT traps always
 # alters the global trap for exiting the shell; the LOCAL_TRAPS option is ignored for
 # the EXIT trap.
+
 # SH_FILE_EXPANSION <K> <S>
 # Perform filename expansion (e.g., ~ expansion) before parameter expansion, com-
 # mand substitution, arithmetic expansion and brace expansion. If this option is
 # unset, it is performed after brace expansion, so things like '~$USERNAME' and
 # '~{pfalstad,rc}' will work.
+
 # SH_NULLCMD <K> <S>
 # Do not use the values of NULLCMD and READNULLCMD when doing redirections, use ':'
 # instead (see Chapter 7 [Redirection], page 16).
+
 # SH_OPTION_LETTERS <K> <S>
 # If this option is set the shell tries to interpret single letter options (which are used
 # with set and setopt) like ksh does. This also affects the value of the - special
 # parameter.
+
 # SH_WORD_SPLIT (-y) <K> <S>
 # Causes field splitting to be performed on unquoted parameter expansions. Note
 # that this option has nothing to do with word splitting. (See Section 14.3 [Parameter
-# Expansion], page 42.)Chapter 16: Options
-# 104
+# Expansion], page 42.)
+
 # TRAPS_ASYNC
 # While waiting for a program to exit, handle signals and run traps immediately.
 # Otherwise the trap is run after a child process has exited. Note this does not affect
 # the point at which traps are run for any case other than when the shell is waiting
 # for a child process.
+
+########################################################################################################################
 # 16.2.11 Shell State
+
 # INTERACTIVE (-i, ksh: -i)
 # This is an interactive shell. This option is set upon initialisation if the standard input
 # is a tty and commands are being read from standard input. (See the discussion of
 # SHIN_STDIN.) This heuristic may be overridden by specifying a state for this option
 # on the command line. The value of this option can only be changed via flags supplied
 # at invocation of the shell. It cannot be changed once zsh is running.
+
 # LOGIN (-l, ksh: -l)
 # This is a login shell. If this option is not explicitly set, the shell becomes a login
 # shell if the first character of the argv[0] passed to the shell is a '-'.
+
 # PRIVILEGED (-p, ksh: -p)
 # Turn on privileged mode. This is enabled automatically on startup if the effective
 # user (group) ID is not equal to the real user (group) ID. Turning this option off
@@ -897,10 +1049,12 @@ setopt AUTO_PUSHD
 # is ignored. This option cannot be changed using the -m option of setopt and
 # unsetopt, and changing it inside a function always changes it globally regardless of
 # the LOCAL_OPTIONS option.
+
 # RESTRICTED (-r)
 # Enables restricted mode. This option cannot be changed using unsetopt, and set-
 # ting it inside a function always changes it globally regardless of the LOCAL_OPTIONS
 # option. See Section 4.3 [Restricted Shell], page 7.
+
 # SHIN_STDIN (-s, ksh: -s)
 # Commands are being read from the standard input. Commands are read from
 # standard input if no command is specified with -c and no file of commands is
@@ -911,16 +1065,20 @@ setopt AUTO_PUSHD
 # - that is purely an indicator of whether on not commands are actually being read
 # from standard input. The value of this option can only be changed via flags supplied
 # at invocation of the shell. It cannot be changed once zsh is running.
+
 # SINGLE_COMMAND (-t, ksh: -t)
 # If the shell is reading from standard input, it exits after a single command has
 # been executed. This also makes the shell non-interactive, unless the INTERACTIVE
 # option is explicitly set on the command line. The value of this option can only be
 # changed via flags supplied at invocation of the shell. It cannot be changed once zsh
-# is running.Chapter 16: Options
-# 105
+# is running.
+
+########################################################################################################################
 # 16.2.12 Zle
+
 # BEEP (+B) <D>
 # Beep on error in ZLE.
+
 # COMBINING_CHARS
 # Assume that the terminal displays combining characters correctly. Specifically, if
 # a base alphanumeric character is followed by one or more zero-width punctuation
@@ -932,13 +1090,16 @@ setopt AUTO_PUSHD
 # character on the assumption that it will be used as part of a word in combina-
 # tion with a word character. Otherwise the base shell does not handle combining
 # characters specially.
+
 # EMACS
 # If ZLE is loaded, turning on this option has the equivalent effect of 'bindkey -
 # e'. In addition, the VI option is unset. Turning it off has no effect. The option
 # setting is not guaranteed to reflect the current keymap. This option is provided for
 # compatibility; bindkey is the recommended interface.
+
 # OVERSTRIKE
 # Start up the line editor in overstrike mode.
+
 # SINGLE_LINE_ZLE (-M) <K>
 # Use single-line command line editing instead of multi-line.
 # Note that although this is on by default in ksh emulation it only provides superficial
@@ -949,6 +1110,7 @@ setopt AUTO_PUSHD
 # In addition, the EMACS option is unset. Turning it off has no effect. The option
 # setting is not guaranteed to reflect the current keymap. This option is provided for
 # compatibility; bindkey is the recommended interface.
+
 # ZLE (-Z) Use the zsh line editor. Set by default in interactive shells connected to a terminal.
 
 echo END SETTING OPTS
