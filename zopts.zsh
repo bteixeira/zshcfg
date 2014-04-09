@@ -1,9 +1,8 @@
-echo SETTING OPTS
+#echo SETTING OPTS
 
 # Handy little thing for testing options
-# Usage:
-#     zopt OPTION
-# @ill print TRUE or FALSE depending on whether the option is set
+# Usage: zopt OPTION
+# Prints TRUE or FALSE depending on whether the option is set
 zopt () {
 	if [[ $# = 1 ]]; then
 		if [[ -o $1 ]]; then
@@ -33,6 +32,7 @@ setopt AUTO_PUSHD
 # If the argument to a cd command (or an implied cd with the AUTO_CD option set)
 # is not a directory, and does not begin with a slash, try to expand the
 # expression as if it were preceded by a '~'
+setopt CDABLE_VARS
 
 # CHASE_DOTS
 # When changing to a directory containing a path segment '..' which would
@@ -138,6 +138,13 @@ setopt AUTO_NAME_DIRS
 # COMPLETE_IN_WORD
 # If unset, the cursor is set to the end of the word if completion is started. Otherwise
 # it stays there and completion is done from both ends.
+## I have no idea what this guy is trying to say.
+## What this seems to do is: when the option is set, if the cursor is between the prefix and sufix of a completion, then take that completion.
+## Here's an example
+## Directories: shop_14_14, shop_14_13
+## cd shop14 (and press TAB between "shop" and "14")
+## completetion: cd shop_14_14
+setopt COMPLETE_IN_WORD
 
 # GLOB_COMPLETE
 # When the current word has a glob pattern, do not insert all the words resulting from
@@ -187,6 +194,7 @@ setopt AUTO_NAME_DIRS
 # match and insert the second match, etc. When there are no more matches, go back
 # to the first one again. reverse-menu-complete may be used to loop through the
 # list in the other direction. This option overrides AUTO_MENU.
+## This option always gives you one expansion instead of only showing the common prefix, I don't like it.
 
 # REC_EXACT (-S)
 # In completion, recognize exact matches even if they are ambiguous.
@@ -382,6 +390,8 @@ setopt NOMATCH
 # Save each command's beginning timestamp (in seconds since the epoch) and the
 # duration (in seconds) to the history file. The format of this prefixed data is:
 # ': <beginning time>:<elapsed seconds>;<command>'.
+## I want as much info as possible on the history. I don't care about interoperability with other shells, and I can even
+## convert it if I need it.
 setopt EXTENDED_HISTORY
 
 # HIST_ALLOW_CLOBBER
@@ -390,6 +400,7 @@ setopt EXTENDED_HISTORY
 
 # HIST_BEEP <D>
 # Beep when an attempt is made to access a history entry which isn't there.
+## I don't want any beeps, but it doesn't seem to beep anyway.
 
 # HIST_EXPIRE_DUPS_FIRST
 # If the internal history needs to be trimmed to add the current command line, setting
@@ -468,6 +479,7 @@ setopt HIST_IGNORE_SPACE
 # HIST_VERIFY
 # Whenever the user enters a line with history expansion, don't execute the line di-
 # rectly; instead, perform history expansion and reload the line into the editing buffer.
+setopt HIST_VERIFY
 
 # INC_APPEND_HISTORY
 # This options works like APPEND_HISTORY except that new history lines are added
@@ -475,8 +487,12 @@ setopt HIST_IGNORE_SPACE
 # until the shell exits. The file will still be periodically re-written to trim it when the
 # number of lines grows 20% beyond the value specified by $SAVEHIST (see also the
 # HIST SAVE BY COPY option).
+setopt INC_APPEND_HISTORY
 
 # SHARE_HISTORY <K>
+unsetopt SHARE_HISTORY
+## NO!
+## This is the most annoying option ever
 # This option both imports new commands from the history file, and also causes
 # your typed commands to be appended to the history file (the latter is like specify-
 # ing INC_APPEND_HISTORY). The history lines are also output with timestamps ala
@@ -559,6 +575,8 @@ setopt HIST_IGNORE_SPACE
 
 # INTERACTIVE_COMMENTS (-k) <K> <S>
 # Allow comments even in interactive shells.
+## Without this set, it will be impossible to copy some snippets directly to the shell. I can't think of any down side.
+setopt INTERACTIVE_COMMENTS
 
 # HASH_CMDS <D>
 # Note the location of each command the first time it is executed. Subsequent invo-
@@ -662,6 +680,7 @@ setopt RC_QUOTES
 
 # LONG_LIST_JOBS (-R)
 # List jobs in the long format by default.
+## BAD ZSH: this options doesn't seem to do anything. I added an alias to show pid's in jobs listing
 
 # MONITOR (-m, ksh: -m)
 # Allow job control. Set by default in interactive shells.
@@ -722,6 +741,7 @@ setopt RC_QUOTES
 # If set, parameter expansion, command substitution and arithmetic expansion are
 # performed in prompts. Substitutions within prompts do not affect the command
 # status.
+setopt PROMPT_SUBST
 
 # TRANSIENT_RPROMPT
 # Remove any right prompt from display when accepting a command line. This may
@@ -1113,5 +1133,5 @@ setopt C_BASES
 
 # ZLE (-Z) Use the zsh line editor. Set by default in interactive shells connected to a terminal.
 
-echo END SETTING OPTS
+#echo END SETTING OPTS
 
